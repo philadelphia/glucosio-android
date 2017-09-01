@@ -29,11 +29,14 @@ import android.preference.PreferenceFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.widget.Toast;
+
 import java.util.Locale;
+
 import org.glucosio.android.GlucosioApplication;
 import org.glucosio.android.R;
 import org.glucosio.android.analytics.Analytics;
 import org.glucosio.android.tools.network.GlucosioExternalLinks;
+
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class AboutActivity extends AppCompatActivity {
@@ -45,9 +48,11 @@ public class AboutActivity extends AppCompatActivity {
 
         getFragmentManager().beginTransaction()
                 .replace(R.id.aboutPreferencesFrame, new MyPreferenceFragment()).commit();
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setTitle(getString(R.string.preferences_about_glucosio));
+        }
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle(getString(R.string.preferences_about_glucosio));
     }
 
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -60,114 +65,36 @@ public class AboutActivity extends AppCompatActivity {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
     }
 
-    public static class MyPreferenceFragment extends PreferenceFragment {
+    public static class MyPreferenceFragment extends PreferenceFragment implements Preference.OnPreferenceClickListener {
+
+        private int easterEggCount;
 
         @Override
         public void onCreate(final Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.about_preference);
 
-            final Preference licencesPref = (Preference) findPreference("preference_licences");
-            final Preference ratePref = (Preference) findPreference("preference_rate");
-            final Preference feedbackPref = (Preference) findPreference("preference_feedback");
-            final Preference privacyPref = (Preference) findPreference("preference_privacy");
-            final Preference termsPref = (Preference) findPreference("preference_terms");
-            final Preference versionPref = (Preference) findPreference("preference_version");
-            final Preference thanksPref = (Preference) findPreference("preference_thanks");
+            Preference licencesPref = findPreference("preference_licences");
+            Preference ratePref = findPreference("preference_rate");
+            Preference feedbackPref = findPreference("preference_feedback");
+            Preference privacyPref = findPreference("preference_privacy");
+            Preference termsPref = findPreference("preference_terms");
+            Preference versionPref = findPreference("preference_version");
+            Preference thanksPref = findPreference("preference_thanks");
 
+            termsPref.setOnPreferenceClickListener(this);
 
-            termsPref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                @Override
-                public boolean onPreferenceClick(Preference preference) {
-                    ExternalLinkActivity.launch(
-                        getActivity(),
-                        getString(R.string.preferences_terms),
-                        GlucosioExternalLinks.TERMS);
-                    addTermsAnalyticsEvent("Glucosio Terms opened");
-                    return false;
-                }
-            });
+            licencesPref.setOnPreferenceClickListener(this);
 
-            licencesPref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                @Override
-                public boolean onPreferenceClick(Preference preference) {
-                    ExternalLinkActivity.launch(
-                        getActivity(),
-                        getString(R.string.preferences_licences_open),
-                        GlucosioExternalLinks.LICENSES);
-                    addTermsAnalyticsEvent("Glucosio Licence opened");
-                    return false;
-                }
-            });
+            ratePref.setOnPreferenceClickListener(this);
 
-            ratePref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                @Override
-                public boolean onPreferenceClick(Preference preference) {
-                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=org.glucosio.android"));
-                    startActivity(intent);
+            feedbackPref.setOnPreferenceClickListener(this);
 
-                    return false;
-                }
-            });
+            privacyPref.setOnPreferenceClickListener(this);
 
-            feedbackPref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                @Override
-                public boolean onPreferenceClick(Preference preference) {
-                    // Open email intent
-                    Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:hello@glucosio.org"));
-                    boolean activityExists = emailIntent.resolveActivityInfo(getActivity().getPackageManager(), 0) != null;
+            thanksPref.setOnPreferenceClickListener(this);
 
-                    if (activityExists) {
-                        startActivity(emailIntent);
-                    } else {
-                        Toast.makeText(getActivity().getApplicationContext(), getResources().getString(R.string.menu_support_error1), Toast.LENGTH_LONG).show();
-                    }
-
-                    return false;
-                }
-            });
-
-            privacyPref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                @Override
-                public boolean onPreferenceClick(Preference preference) {
-                    ExternalLinkActivity.launch(
-                        getActivity(),
-                        getString(R.string.preferences_privacy),
-                        GlucosioExternalLinks.PRIVACY);
-                    addTermsAnalyticsEvent("Glucosio Privacy opened");
-                    return false;
-                }
-            });
-
-            thanksPref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                @Override
-                public boolean onPreferenceClick(Preference preference) {
-                    ExternalLinkActivity.launch(
-                            getActivity(),
-                            getString(R.string.preferences_contributors),
-                            GlucosioExternalLinks.THANKS);
-                    addTermsAnalyticsEvent("Glucosio Contributors opened");
-                    return false;
-                }
-            });
-
-            versionPref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-
-                int easterEggCount;
-
-                @Override
-                public boolean onPreferenceClick(Preference preference) {
-                    if (easterEggCount == 6) {
-                        String uri = String.format(Locale.ENGLISH, "geo:%f,%f", 40.794010, 17.124583);
-                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
-                        getActivity().startActivity(intent);
-                        easterEggCount = 0;
-                    } else {
-                        this.easterEggCount = easterEggCount + 1;
-                    }
-                    return false;
-                }
-            });
+            versionPref.setOnPreferenceClickListener(this);
 
         }
 
@@ -176,5 +103,96 @@ public class AboutActivity extends AppCompatActivity {
 
             analytics.reportAction("Preferences", action);
         }
+
+        @Override
+        public boolean onPreferenceClick(Preference preference) {
+            switch (preference.getKey()) {
+                case "preference_feedback":
+                    sendFeedBack();
+                    return true;
+                case "preference_rate":
+                    rate();
+                    return true;
+                case "preference_terms":
+                    openUseItems();
+                    return true;
+                case "preference_privacy":
+                    checkPrivacy();
+                    return true;
+                case "preference_licences":
+                    checkLicense();
+                    return true;
+                case "preference_thanks":
+                    acknowledge();
+                    return true;
+                case "preference_version":
+                    showVersion();
+                    return true;
+
+                default:
+                    return false;
+            }
+        }
+
+        private void sendFeedBack() {
+            Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:hello@glucosio.org"));
+            boolean activityExists = emailIntent.resolveActivityInfo(getActivity().getPackageManager(), 0) != null;
+
+            if (activityExists) {
+                startActivity(emailIntent);
+            } else {
+                Toast.makeText(getActivity().getApplicationContext(), getResources().getString(R.string.menu_support_error1), Toast.LENGTH_LONG).show();
+            }
+        }
+
+        private void rate() {
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=org.glucosio.android"));
+            startActivity(intent);
+        }
+
+        private void openUseItems() {
+            ExternalLinkActivity.launch(
+                    getActivity(),
+                    getString(R.string.preferences_terms),
+                    GlucosioExternalLinks.TERMS);
+            addTermsAnalyticsEvent("Glucosio Terms opened");
+        }
+
+        private void checkPrivacy() {
+            ExternalLinkActivity.launch(
+                    getActivity(),
+                    getString(R.string.preferences_privacy),
+                    GlucosioExternalLinks.PRIVACY);
+            addTermsAnalyticsEvent("Glucosio Privacy opened");
+        }
+
+        private void acknowledge() {
+            ExternalLinkActivity.launch(
+                    getActivity(),
+                    getString(R.string.preferences_contributors),
+                    GlucosioExternalLinks.THANKS);
+            addTermsAnalyticsEvent("Glucosio Contributors opened");
+        }
+
+        private void checkLicense() {
+            ExternalLinkActivity.launch(
+                    getActivity(),
+                    getString(R.string.preferences_licences_open),
+                    GlucosioExternalLinks.LICENSES);
+            addTermsAnalyticsEvent("Glucosio Licence opened");
+        }
+
+        //        此处会有一个彩蛋
+        private void showVersion() {
+            if (easterEggCount == 6) {
+                String uri = String.format(Locale.ENGLISH, "geo:%f,%f", 40.794010, 17.124583);
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+                getActivity().startActivity(intent);
+                easterEggCount = 0;
+            } else {
+                easterEggCount = easterEggCount + 1;
+            }
+        }
+
     }
 }
