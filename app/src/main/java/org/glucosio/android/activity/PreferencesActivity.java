@@ -89,16 +89,16 @@ public class PreferencesActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
+//        Intent intent = new Intent(this, MainActivity.class);
+//        startActivity(intent);
         finish();
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
+//            Intent intent = new Intent(this, MainActivity.class);
+//            startActivity(intent);
             finish();
         }
         return true;
@@ -109,7 +109,7 @@ public class PreferencesActivity extends AppCompatActivity {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
     }
 
-    public static class MyPreferenceFragment extends PreferenceFragment {
+    public static class MyPreferenceFragment extends PreferenceFragment implements Preference.OnPreferenceClickListener, Preference.OnPreferenceChangeListener {
         private DatabaseHandler dB;
         private User user;
         private ListPreference languagePref;
@@ -130,7 +130,7 @@ public class PreferencesActivity extends AppCompatActivity {
         private SwitchPreference freestyleLibrePref;
         private User updatedUser;
         private LocaleHelper localeHelper;
-
+        private static final String TAG = "MyPreferenceFragment";
 
         @Override
         public void onCreate(final Bundle savedInstanceState) {
@@ -186,169 +186,23 @@ public class PreferencesActivity extends AppCompatActivity {
             }
 
             final Preference aboutPref = findPreference("about_settings");
-            countryPref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                @Override
-                public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    updatedUser.setCountry(newValue.toString());
+            countryPref.setOnPreferenceChangeListener(this);
+            agePref.setOnPreferenceChangeListener(this);
+            genderPref.setOnPreferenceChangeListener(this);
+            diabetesTypePref.setOnPreferenceChangeListener(this);
+            unitPrefGlucose.setOnPreferenceChangeListener(this);
+            unitPrefA1c.setOnPreferenceChangeListener(this);
+            unitPrefWeight.setOnPreferenceChangeListener(this);
+            rangePref.setOnPreferenceChangeListener(this);
 
-                    updateDB();
-                    return false;
-                }
-            });
-            agePref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                @Override
-                public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    if (newValue.toString().trim().equals("")) {
-                        return false;
-                    }
-                    updatedUser.setAge(Integer.parseInt(newValue.toString()));
-                    updateDB();
-                    return true;
-                }
-            });
-            genderPref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                @Override
-                public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    updatedUser.setGender(newValue.toString());
-                    updateDB();
-                    return true;
-                }
-            });
-            diabetesTypePref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                @Override
-                public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    String[] typesArray = getResources().getStringArray(R.array.helloactivity_diabetes_type);
-                    String selectedType = newValue.toString();
+            minRangePref.setOnPreferenceChangeListener(this);
+            minRangePref.setOnPreferenceClickListener(this);
 
-                    if (selectedType.equals(typesArray[0])) {
-                        updatedUser.setD_type(1);
-                        updateDB();
-                    } else if (selectedType.equals(typesArray[1])) {
-                        updatedUser.setD_type(2);
-                        updateDB();
-                    } else if (selectedType.equals(typesArray[2])) {
-                        updatedUser.setD_type(3);
-                        updateDB();
-                    } else {
-                        updatedUser.setD_type(4);
-                        updateDB();
-                    }
+            maxRangePref.setOnPreferenceClickListener(this);
+            maxRangePref.setOnPreferenceChangeListener(this);
 
-                    return true;
-                }
-            });
-            unitPrefGlucose.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                @Override
-                public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    if (newValue.toString().equals(getResources().getString(R.string.helloactivity_spinner_preferred_glucose_unit_1))) {
-                        updatedUser.setPreferred_unit("mg/dL");
-                    } else {
-                        updatedUser.setPreferred_unit("mmol/L");
-                    }
-                    updateDB();
-                    return true;
-                }
-            });
-            unitPrefA1c.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                @Override
-                public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    if (newValue.toString().equals(getResources().getString(R.string.preferences_spinner_preferred_a1c_unit_1))) {
-                        updatedUser.setPreferred_unit_a1c("percentage");
-                    } else {
-                        updatedUser.setPreferred_unit_a1c("mmol/mol");
-                    }
-                    updateDB();
-                    return true;
-                }
-            });
-            unitPrefWeight.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                @Override
-                public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    if (newValue.toString().equals(getResources().getString(R.string.preferences_spinner_preferred_weight_unit_1))) {
-                        updatedUser.setPreferred_unit_weight("kilograms");
-                    } else {
-                        updatedUser.setPreferred_unit_weight("pounds");
-                    }
-                    updateDB();
-                    return true;
-                }
-            });
-            rangePref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                @Override
-                public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    updatedUser.setPreferred_range(newValue.toString());
-                    updateDB();
-                    return true;
-                }
-            });
-
-            minRangePref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                @Override
-                public boolean onPreferenceClick(Preference preference) {
-                    minEditText.setText("");
-                    return false;
-                }
-            });
-
-            minRangePref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                @Override
-                public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    if (TextUtils.isEmpty(newValue.toString().trim())) {
-                        return false;
-                    }
-                    if (user.getPreferred_unit().equals("mg/dL")) {
-                        updatedUser.setCustom_range_min(Integer.parseInt(newValue.toString()));
-                    } else {
-                        updatedUser.setCustom_range_min(GlucosioConverter.glucoseToMgDl(Double.parseDouble(newValue.toString())));
-                    }
-                    updateDB();
-                    return true;
-                }
-            });
-
-            maxRangePref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                @Override
-                public boolean onPreferenceClick(Preference preference) {
-                    maxEditText.setText("");
-                    return false;
-                }
-            });
-            maxRangePref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                @Override
-                public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    if (TextUtils.isEmpty(newValue.toString().trim())) {
-                        return false;
-                    }
-                    if (user.getPreferred_unit().equals("mg/dL")) {
-                        updatedUser.setCustom_range_max(Integer.parseInt(newValue.toString()));
-                    } else {
-                        updatedUser.setCustom_range_max(GlucosioConverter.glucoseToMgDl(Double.parseDouble(newValue.toString())));
-                    }
-                    updateDB();
-                    return true;
-                }
-            });
-            dyslexiaModePref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                @Override
-                public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    // EXPERIMENTAL PREFERENCE
-                    // Display Alert
-                    showExperimentalDialog(true);
-                    return true;
-                }
-            });
-            freestyleLibrePref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                @Override
-                public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    if (!((SwitchPreference) preference).isChecked()) {
-                        // EXPERIMENTAL PREFERENCE
-                        // Display Alert
-                        showExperimentalDialog(false);
-                        return true;
-                    }
-                    return true;
-                }
-            });
+            freestyleLibrePref.setOnPreferenceChangeListener(this);
+            dyslexiaModePref.setOnPreferenceChangeListener(this);
 
             ageEditText = agePref.getEditText();
             minEditText = minRangePref.getEditText();
@@ -360,6 +214,7 @@ public class PreferencesActivity extends AppCompatActivity {
             ArrayList<String> countriesArray = new ArrayList<>();
             Locale[] locales = Locale.getAvailableLocales();
 
+//            init Country/Locale data
             for (Locale locale : locales) {
                 String country = locale.getDisplayCountry();
                 if (country.trim().length() > 0 && !countriesArray.contains(country)) {
@@ -376,14 +231,7 @@ public class PreferencesActivity extends AppCompatActivity {
 
             updateDB();
 
-            aboutPref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                @Override
-                public boolean onPreferenceClick(Preference preference) {
-                    Intent aboutActivity = new Intent(getActivity(), AboutActivity.class);
-                    getActivity().startActivity(aboutActivity);
-                    return false;
-                }
-            });
+            aboutPref.setOnPreferenceClickListener(this);
         }
 
         private String getA1CUnitValue(final String a1CUnit) {
@@ -409,7 +257,7 @@ public class PreferencesActivity extends AppCompatActivity {
 
         private void initLanguagePreference() {
             List<String> valuesLanguages = localeHelper.getLocalesWithTranslation(getResources());
-
+            Log.i(TAG, "initLanguagePreference: " + valuesLanguages.size());
             List<String> displayLanguages = new ArrayList<>(valuesLanguages.size());
             for (String language : valuesLanguages) {
                 if (language.length() > 0) {
@@ -427,23 +275,7 @@ public class PreferencesActivity extends AppCompatActivity {
                 languagePref.setSummary(displayLanguage);
             }
 
-            languagePref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                @Override
-                public boolean onPreferenceChange(Preference preference, Object newValue) {
-
-                    String language = (String) newValue;
-                    updatedUser.setPreferred_language(language);
-                    languagePref.setSummary(localeHelper.getDisplayLanguage(language));
-                    languagePref.setValue(language);
-
-                    updateDB();
-
-                    localeHelper.updateLanguage(getActivity(), language);
-                    getActivity().recreate();
-
-                    return true;
-                }
-            });
+            languagePref.setOnPreferenceChangeListener(this);
         }
 
         private void updateDB() {
@@ -504,5 +336,225 @@ public class PreferencesActivity extends AppCompatActivity {
             mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 100, mPendingIntent);
             System.exit(0);
         }
+
+        @Override
+        public boolean onPreferenceChange(Preference preference, Object newValue) {
+            switch (preference.getKey()) {
+                case "pref_language":
+                    onLanguagePreSelected(newValue);
+                    return true;
+                case "pref_country":
+                    onCountryPreSelected(newValue);
+                    return true;
+                case "pref_age":
+                    if (newValue.toString().trim().equals("")) {
+                        return false;
+                    }
+                    onAgePreSelected(newValue);
+                    return true;
+                case "pref_gender":
+                    onGenderPreSelected(newValue);
+
+                    return true;
+                case "pref_diabetes_type":
+                    onDiabetesTypePreSelected(newValue);
+                    return true;
+                case "pref_unit_glucose":
+                    onUnitTypePreSelected(newValue);
+
+                    return true;
+                case "pref_unit_a1c":
+                    onUnitA1cPreSelected(newValue);
+
+                    return true;
+                case "pref_unit_weight":
+
+                    onUnitWeightPreSelected(newValue);
+                    return true;
+                case "pref_range":
+                    onRangePreSelected(newValue);
+                    return true;
+                case "pref_range_min":
+                    if (TextUtils.isEmpty(newValue.toString().trim())) {
+                        return false;
+                    }
+
+                    onRangeMinPreSelected(newValue);
+                    return true;
+                case "pref_range_max":
+                    if (TextUtils.isEmpty(newValue.toString().trim())) {
+                        return false;
+                    }
+                    onRangeMaxPreSelected(newValue);
+
+                    return true;
+                case "pref_freestyle_libre":
+                    onFreeStyleLibrePreSelected(preference, newValue);
+                    return true;
+                case "pref_graph_old":
+                    onReturnOldPreSelected();
+                    return true;
+                case "pref_font_dyslexia":
+                        onFontDyslexiaPreSelected();
+                    return true;
+
+                default:
+                    return false;
+
+            }
+        }
+
+        @Override
+        public boolean onPreferenceClick(Preference preference) {
+            switch (preference.getKey()) {
+                case "pref_range_min":
+                    onRangeMinPreClicked();
+                    return true;
+                case "pref_range_max":
+                    onRangeMaxPreClicked();
+
+                    return true;
+                case "about_settings":
+                    onAboutPreClicked();
+
+                default:
+                    return false;
+            }
+        }
+
+
+        private void onLanguagePreSelected(Object newValue) {
+            String language = (String) newValue;
+            updatedUser.setPreferred_language(language);
+            languagePref.setSummary(localeHelper.getDisplayLanguage(language));
+            languagePref.setValue(language);
+
+            updateDB();
+
+            localeHelper.updateLanguage(getActivity(), language);
+            getActivity().recreate();
+        }
+
+        private void onCountryPreSelected(Object newValue) {
+            updatedUser.setCountry(newValue.toString());
+            updateDB();
+        }
+
+        private void onAgePreSelected(Object newValue) {
+
+            updatedUser.setAge(Integer.parseInt(newValue.toString()));
+            updateDB();
+        }
+
+        private void onGenderPreSelected(Object newValue) {
+            updatedUser.setGender(newValue.toString());
+            updateDB();
+        }
+
+        private void onDiabetesTypePreSelected(Object newValue) {
+            String[] typesArray = getResources().getStringArray(R.array.helloactivity_diabetes_type);
+            String selectedType = newValue.toString();
+
+            if (selectedType.equals(typesArray[0])) {
+                updatedUser.setD_type(1);
+                updateDB();
+            } else if (selectedType.equals(typesArray[1])) {
+                updatedUser.setD_type(2);
+                updateDB();
+            } else if (selectedType.equals(typesArray[2])) {
+                updatedUser.setD_type(3);
+                updateDB();
+            } else {
+                updatedUser.setD_type(4);
+                updateDB();
+            }
+        }
+
+        private void onUnitTypePreSelected(Object newValue) {
+            if (newValue.toString().equals(getResources().getString(R.string.helloactivity_spinner_preferred_glucose_unit_1))) {
+                updatedUser.setPreferred_unit("mg/dL");
+            } else {
+                updatedUser.setPreferred_unit("mmol/L");
+            }
+            updateDB();
+        }
+
+        private void onUnitA1cPreSelected(Object newValue) {
+            if (newValue.toString().equals(getResources().getString(R.string.preferences_spinner_preferred_a1c_unit_1))) {
+                updatedUser.setPreferred_unit_a1c("percentage");
+            } else {
+                updatedUser.setPreferred_unit_a1c("mmol/mol");
+            }
+            updateDB();
+        }
+
+        private void onUnitWeightPreSelected(Object newValue) {
+            if (newValue.toString().equals(getResources().getString(R.string.preferences_spinner_preferred_weight_unit_1))) {
+                updatedUser.setPreferred_unit_weight("kilograms");
+            } else {
+                updatedUser.setPreferred_unit_weight("pounds");
+            }
+            updateDB();
+        }
+
+        private void onRangePreSelected(Object newValue) {
+            updatedUser.setPreferred_range(newValue.toString());
+            updateDB();
+        }
+
+        private void onRangeMinPreSelected(Object newValue) {
+            if (user.getPreferred_unit().equals("mg/dL")) {
+                updatedUser.setCustom_range_min(Integer.parseInt(newValue.toString()));
+            } else {
+                updatedUser.setCustom_range_min(GlucosioConverter.glucoseToMgDl(Double.parseDouble(newValue.toString())));
+            }
+            updateDB();
+        }
+
+        private void onRangeMaxPreSelected(Object newValue) {
+            if (user.getPreferred_unit().equals("mg/dL")) {
+                updatedUser.setCustom_range_max(Integer.parseInt(newValue.toString()));
+            } else {
+                updatedUser.setCustom_range_max(GlucosioConverter.glucoseToMgDl(Double.parseDouble(newValue.toString())));
+            }
+            updateDB();
+        }
+
+        private void onFreeStyleLibrePreSelected(Preference preference, Object newValue) {
+            if (!((SwitchPreference) preference).isChecked()) {
+                // EXPERIMENTAL PREFERENCE
+                // Display Alert
+                showExperimentalDialog(false);
+
+            }
+        }
+
+        private void onReturnOldPreSelected() {
+
+        }
+
+        private void onFontDyslexiaPreSelected() {
+            // EXPERIMENTAL PREFERENCE
+            // Display Alert
+            showExperimentalDialog(true);
+        }
+
+        private void onRangeMaxPreClicked() {
+            maxEditText.setText("");
+        }
+
+        private void onRangeMinPreClicked() {
+            Log.i(TAG, "onRangeMinPreClicked: ");
+//            minEditText.setText("");
+            minRangePref.setSummary("dffdf ");
+        }
+
+        private void onAboutPreClicked() {
+            Intent aboutActivity = new Intent(getActivity(), AboutActivity.class);
+            getActivity().startActivity(aboutActivity);
+        }
+
     }
+
+
 }

@@ -32,16 +32,17 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <ImageView
-                android:layout_width="46dp"
-                android:layout_height="46dp"
-                android:layout_gravity="center"
-                android:src="@drawable/add_circle_glucose" />
+            <!--<ImageView-->
+                <!--android:layout_width="46dp"-->
+                <!--android:layout_height="46dp"-->
+                <!--android:layout_gravity="center"-->
+                <!--android:src="@drawable/add_circle_glucose" />-->
 
             <TextView
                 fontPath="fonts/lato-bold.ttf"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:drawableTop="@drawable/add_circle_glucose"
                 android:layout_gravity="center"
                 android:gravity="center"
                 android:paddingTop="8dp"
@@ -57,17 +58,18 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <ImageView
-                android:layout_width="46dp"
-                android:layout_height="46dp"
-                android:layout_gravity="center"
-                android:src="@drawable/add_circle_a1c_disabled" />
+            <!--<ImageView-->
+                <!--android:layout_width="46dp"-->
+                <!--android:layout_height="46dp"-->
+                <!--android:layout_gravity="center"-->
+                <!--android:src="@drawable/add_circle_a1c_disabled" />-->
 
             <TextView
                 fontPath="fonts/lato-bold.ttf"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:drawableTop="@drawable/add_circle_a1c_disabled"
                 android:gravity="center"
                 android:paddingTop="8dp"
                 android:text="@string/fab_HB1AC"
@@ -81,17 +83,18 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <ImageView
-                android:layout_width="46dp"
-                android:layout_height="46dp"
-                android:layout_gravity="center"
-                android:src="@drawable/add_circle_weight_disabled" />
+            <!--<ImageView-->
+                <!--android:layout_width="46dp"-->
+                <!--android:layout_height="46dp"-->
+                <!--android:layout_gravity="center"-->
+                <!--android:src="@drawable/add_circle_weight_disabled" />-->
 
             <TextView
                 fontPath="fonts/lato-bold.ttf"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:drawableTop="@drawable/add_circle_weight_disabled"
                 android:gravity="center"
                 android:paddingTop="8dp"
                 android:text="@string/fab_weight"
@@ -113,16 +116,17 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <ImageView
-                android:layout_width="46dp"
-                android:layout_height="46dp"
-                android:layout_gravity="center"
-                android:src="@drawable/add_circle_pressure_disabled" />
+            <!--<ImageView-->
+                <!--android:layout_width="46dp"-->
+                <!--android:layout_height="46dp"-->
+                <!--android:layout_gravity="center"-->
+                <!--android:src="@drawable/add_circle_pressure_disabled" />-->
 
             <TextView
                 fontPath="fonts/lato-bold.ttf"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:drawableTop="@drawable/add_circle_pressure_disabled"
                 android:layout_gravity="center"
                 android:gravity="center"
                 android:paddingTop="8dp"
@@ -137,16 +141,17 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <ImageView
-                android:layout_width="46dp"
-                android:layout_height="46dp"
-                android:layout_gravity="center"
-                android:src="@drawable/add_circle_ketones_disabled" />
+            <!--<ImageView-->
+                <!--android:layout_width="46dp"-->
+                <!--android:layout_height="46dp"-->
+                <!--android:layout_gravity="center"-->
+                <!--android:src="@drawable/add_circle_ketones_disabled" />-->
 
             <TextView
                 fontPath="fonts/lato-bold.ttf"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:drawableTop="@drawable/add_circle_ketones_disabled"
                 android:layout_gravity="center"
                 android:gravity="center"
                 android:paddingTop="8dp"
@@ -162,17 +167,18 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <ImageView
-                android:layout_width="46dp"
-                android:layout_height="46dp"
-                android:layout_gravity="center"
-                android:src="@drawable/add_circle_cholesterol_disabled" />
+            <!--<ImageView-->
+                <!--android:layout_width="46dp"-->
+                <!--android:layout_height="46dp"-->
+                <!--android:layout_gravity="center"-->
+                <!--android:src="@drawable/add_circle_cholesterol_disabled" />-->
 
             <TextView
                 fontPath="fonts/lato-bold.ttf"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:drawableTop="@drawable/add_circle_cholesterol_disabled"
                 android:gravity="center"
                 android:paddingTop="8dp"
                 android:text="@string/fab_cholesterol"
