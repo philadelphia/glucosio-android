@@ -75,6 +75,9 @@ import org.glucosio.android.view.ExportView;
 
 import java.util.Calendar;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 
@@ -83,32 +86,50 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
     private static final String INTENT_EXTRA_DROPDOWN = "history_dropdown";
     private static final int REQUEST_INVITE = 1;
     private static final String INTENT_EXTRA_PAGER = "pager";
+    @BindView(R.id.activity_main_toolbar)
+    Toolbar activityMainToolbar;
+    @BindView(R.id.activity_main_tab_layout)
+    TabLayout tabLayout;
+    @BindView(R.id.activity_main_appbar_layout)
+    AppBarLayout activityMainAppbarLayout;
+    @BindView(R.id.activity_main_pager)
+    ViewPager viewPager;
+    @BindView(R.id.activity_main_empty)
+    TextView activityMainEmpty;
+    @BindView(R.id.activity_main_arrow)
+    ImageView activityMainArrow;
+    @BindView(R.id.activity_main_empty_layout)
+    LinearLayout activityMainEmptyLayout;
+    @BindView(R.id.activity_main_fab_add_reading)
+    FloatingActionButton activityMainFabAddReading;
+    @BindView(R.id.activity_main_coordinator_layout)
+    CoordinatorLayout activityMainCoordinatorLayout;
 
-    private BottomSheetBehavior bottomSheetBehavior;
-    private ExportPresenter exportPresenter;
-    private RadioButton exportRangeButton;
     private HomePagerAdapter homePagerAdapter;
-    private MainPresenter presenter;
-    private ViewPager viewPager;
+    private ExportPresenter exportPresenter;
+
+    private RadioButton exportRangeButton;
     private BottomSheetDialog bottomSheetAddDialog;
     private TextView exportDialogDateFrom;
     private TextView exportDialogDateTo;
     private View bottomSheetAddDialogView;
-    private TabLayout tabLayout;
+    private MainPresenter presenter;
     private LocaleHelper localeHelper;
+    private BottomSheetBehavior bottomSheetBehavior;
+
+    private static final String TAG = "MainActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        Log.i(TAG, "onCreate: ");
         GlucosioApplication application = (GlucosioApplication) getApplication();
 
         initPresenters(application);
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.activity_main_toolbar);
-        tabLayout = (TabLayout) findViewById(R.id.activity_main_tab_layout);
-        viewPager = (ViewPager) findViewById(R.id.activity_main_pager);
 
         if (toolbar != null) {
             setSupportActionBar(toolbar);
@@ -157,14 +178,6 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
             }
         });
 
-        FloatingActionButton fabAddReading = (FloatingActionButton) findViewById(R.id.activity_main_fab_add_reading);
-        fabAddReading.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                bottomSheetAddDialog.show();
-                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-            }
-        });
 
         bottomSheetAddDialog = new BottomSheetDialog(this);
 
@@ -575,7 +588,9 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
         return (Toolbar) findViewById(R.id.activity_main_toolbar);
     }
 
-    public LocaleHelper getLocaleHelper() { return localeHelper; }
+    public LocaleHelper getLocaleHelper() {
+        return localeHelper;
+    }
 
     private void hideFabAnimation() {
         final View fab = findViewById(R.id.activity_main_fab_add_reading);
@@ -754,5 +769,11 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
 
     private void showErrorDialogPlayServices() {
         Toast.makeText(getApplicationContext(), R.string.activity_main_error_play_services, Toast.LENGTH_SHORT).show();
+    }
+
+    @OnClick(R.id.activity_main_fab_add_reading)
+    public void onViewClicked() {
+        bottomSheetAddDialog.show();
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
     }
 }
